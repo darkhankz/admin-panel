@@ -1,5 +1,5 @@
 // ====== НАСТРОЙКИ — впишите свои значения ======
-const WORKER_URL = 'https://super-surf-e2a4.upstudynow.workers.dev/' ; // адрес вашего Cloudflare Worker
+const WORKER_URL = 'https://super-surf-e2a4.upstudynow.workers.dev' ; // адрес вашего Cloudflare Worker
 const ADMIN_KEY = 'change-me-123'; // должен совпадать с IMPORT_KEY в worker.js
 // ===============================================
 
