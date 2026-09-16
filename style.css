@@ -51,8 +51,9 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 .hbar .fill { height: 100%; background: var(--accent); }
 .hbar .cnt { width: 44px; text-align: right; color: var(--muted); }
 
-.toolbar { display: flex; gap: 10px; margin-bottom: 14px; }
-.toolbar input { flex: 1; }
+.toolbar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+.toolbar input { flex: 2 1 240px; min-width: 160px; width: auto; }
+.toolbar select { flex: 1 1 220px; min-width: 180px; width: auto; max-width: 100%; }
 .video-list { display: flex; flex-direction: column; gap: 10px; }
 .vrow { display: flex; gap: 12px; background: var(--panel); border-radius: var(--radius); padding: 10px; align-items: center; }
 .vrow img { width: 120px; height: 68px; object-fit: cover; border-radius: 8px; flex-shrink: 0; background: var(--panel2); }
@@ -90,4 +91,5 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 @media (max-width: 560px) {
 	.vrow img { width: 90px; height: 52px; }
 	.hbar .name { width: 110px; }
+	.toolbar input, .toolbar select { flex: 1 1 100%; }
 }
