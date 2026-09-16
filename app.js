@@ -1,5 +1,5 @@
 // ====== НАСТРОЙКИ — впишите свои значения ======
-const WORKER_URL = 'https://super-surf-e2a4.upstudynow.workers.dev' ; // адрес вашего Cloudflare Worker
+const WORKER_URL = 'https://super-surf-e2a4.upstudynow.workers.dev/' ; // адрес вашего Cloudflare Worker
 const ADMIN_KEY = 'change-me-123'; // должен совпадать с IMPORT_KEY в worker.js
 // ===============================================
 
@@ -52,11 +52,36 @@ async function loadStats() {
 	try {
 		const s = await api('/admin/stats');
 		const week = s.byDay.slice(-7).reduce((a, d) => a + d.count, 0);
+		const totalViews = s.totalViews || 0;
+		const avgViews = s.total ? (totalViews / s.total).toFixed(1) : '0';
 		$('statsCards').innerHTML = `
 			<div class="stat-card"><div class="num">${s.total}</div><div class="lbl">Всего видео</div></div>
-			<div class="stat-card"><div class="num">${s.byCategory.length}</div><div class="lbl">Категорий занято</div></div>
+			<div class="stat-card"><div class="num">${totalViews}</div><div class="lbl">Всего просмотров 👁</div></div>
+			<div class="stat-card"><div class="num">${avgViews}</div><div class="lbl">Среднее на видео</div></div>
 			<div class="stat-card"><div class="num">${week}</div><div class="lbl">Добавлено за 7 дней</div></div>
 			<div class="stat-card"><div class="num">${(s.firstDate || '—').slice(0, 10)}</div><div class="lbl">Первая запись</div></div>`;
+
+		// v1.8.0: топ-10 по просмотрам
+		const top = s.topViews || [];
+		$('statsTopViews').innerHTML = top.length
+			? top.map((v, i) => `
+				<div class="hbar">
+					<div class="name" title="${esc(v.title)}">${i + 1}. ${esc(v.title)} <span class="muted">· ${esc(v.category)}</span></div>
+					<div class="cnt">👁 ${v.views || 0}</div>
+				</div>`).join('')
+			: '<div class="muted">Пока нет просмотров</div>';
+
+		// v1.8.0: просмотры по категориям
+		const vbc = s.viewsByCategory || [];
+		const maxV = Math.max(...vbc.map((c) => c.views || 0), 1);
+		$('statsViewsByCat').innerHTML = vbc.length
+			? vbc.map((c) => `
+				<div class="hbar">
+					<div class="name" title="${esc(c.category)}">${esc(c.category)}</div>
+					<div class="track"><div class="fill" style="width:${((c.views || 0) / maxV) * 100}%"></div></div>
+					<div class="cnt">${c.views || 0}</div>
+				</div>`).join('')
+			: '<div class="muted">Пока нет данных</div>';
 		const max = Math.max(...s.byDay.map((d) => d.count), 1);
 		$('chartByDay').innerHTML = s.byDay.map((d) => `
 			<div class="bar" style="height:${Math.max(2, (d.count / max) * 100)}%">
@@ -158,7 +183,7 @@ function vRow(v) {
 		<img src="${esc(v.thumbnailUrl)}" alt="" loading="lazy">
 		<div class="vinfo">
 			<div class="t">${esc(v.title)}</div>
-			<div class="meta">📁${esc(v.category)} · ⏱ ${esc(v.durationMin || '')} · 📅${date}</div>
+			<div class="meta">📁 ${esc(v.category)} · ⏱ ${esc(v.durationMin || '')} · 📅 ${date} · 👁 ${v.views || 0}</div>
 		</div>
 		<div class="vactions">
 			<a class="icon-btn" href="${esc(v.url)}" target="_blank" rel="noopener" title="Открыть на YouTube">▶</a>
