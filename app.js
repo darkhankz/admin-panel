@@ -1,5 +1,5 @@
 // ====== НАСТРОЙКИ — впишите свои значения ======
-const WORKER_URL = 'https://super-surf-e2a4.upstudynow.workers.dev' ; // адрес вашего Cloudflare Worker
+const WORKER_URL = 'https://super-surf-e2a4.upstudynow.workers.dev'; // адрес вашего Cloudflare Worker (БЕЗ слэша в конце!)
 const ADMIN_KEY = 'change-me-123'; // должен совпадать с IMPORT_KEY в worker.js
 // ===============================================
 
@@ -9,7 +9,9 @@ let nextCursor = null;
 let editId = null;
 
 async function api(path, opts = {}) {
-	const res = await fetch(WORKER_URL + path, {
+	// v1.8.0: устойчивая склейка — убираем возможные лишние слэши на стыке
+	const url = WORKER_URL.replace(/\/+$/, '') + '/' + String(path).replace(/^\/+/, '');
+	const res = await fetch(url, {
 		...opts,
 		headers: { 'X-Admin-Key': ADMIN_KEY, 'Content-Type': 'application/json', ...(opts.headers || {}) },
 	});
